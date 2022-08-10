@@ -5,5 +5,5 @@ func Add(a, b int) int {
 }
 
 func Add3(a, b, c int) int {
-	return 0
+	return a + b + c
 }
