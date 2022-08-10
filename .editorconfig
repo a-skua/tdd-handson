@@ -7,6 +7,6 @@ charset = utf-8
 indent_style = space
 indent_size = 2
 
-[{Makefile,Dockerfile}]
+[{*.go,Makefile,Dockerfile}]
 indent_style = tab
 indent_size = 4

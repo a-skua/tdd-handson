@@ -4,9 +4,11 @@
 \usepackage{minted}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage{amsmath}
 \setbeamertemplate{navigation symbols}{}
 
 \title{テスト駆動開発 ハンズオン \#1}
+\subtitle{Test-Driven Development Hans-On \#1}
 \author{asuka y}
 \date{Aug 21 2022}
 
@@ -23,143 +25,235 @@
 \end{frame}
 
 \section{テスト駆動開発とは何か}
-\subsection{by Wikibedia}
-\begin{frame}\frametitle{
-    by
-    \href{https://ja.wikipedia.org/wiki/\%E3\%83\%86\%E3\%82\%B9\%E3\%83\%88\%E9\%A7\%86\%E5\%8B\%95\%E9\%96\%8B\%E7\%99\%BA}{\underline{Wikibedia}}
+\subsection{テスト駆動開発とは何か}
+\begin{frame}\frametitle{テスト開発とは何か}
+  \begin{quote}
+    テスト駆動開発(TDD)はテスト技法ではない...
+    TDDは分析器用であり、設計技法であり、
+    実際には開発のすべてのアクティビティを構造化する技法なのだ。
+  \end{quote}
+  \begin{flushright}
+    ---Kent Beck
+  \end{flushright}
+
+  テスト技法ではなく、開発技法である。
+
+  {
+    \large \color{blue}
+    $\rightarrow$
+    テストを書くことが目的ではない。
   }
-  \begin{quotation}
-    テスト駆動開発 (てすとくどうかいはつ、英: test-driven development; TDD) とは、プログラム開発手法の一種で、プログラムに必要な各機能について、最初にテストを書き（これをテストファーストと言う）、そのテストが動作する必要最低限な実装をとりあえず行なった後、コードを洗練させる、という短い工程を繰り返すスタイルである。  
-    多くのアジャイルソフトウェア開発手法、例えばエクストリーム・プログラミングにおいて強く推奨されている。近年はビヘイビア駆動開発へと発展を遂げている。
-  \end{quotation}
 \end{frame}
 
-\subsection{認識の間違いからくる現状と課題}
-\begin{frame}\frametitle{現状と課題}
+\subsection{テスト駆動開発が目指すもの}
+\begin{frame}\frametitle{テスト駆動開発が目指すもの}
+  \begin{quote}
+    「動作するきれいなコード」。
+    Ron Jeffiresのこの簡潔な言葉が、
+    テスト駆動開発(TDD)のゴールだ。
+    動作するきれいなコードはあらゆる意味で価値がある。
+  \end{quote}
+  \begin{flushright}
+    ---Kent Beck
+  \end{flushright}
+
+  TDDは動作する「きれいなコード」に辿り着くために、
+  {\color{blue} 自動化されたテストによって開発を推し進める技法}である。
+
+  \begin{center}
+    \color{red} \large テストを手段として用いるのであって、テストが目的なのではない。
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{動作するきれいなコード}
   \begin{itemize}
-    \item まずは実装してみて後からテストを書こう。
-    \item テストを書くことでシステムの品質を担保する。
-    \item テストは成果物、カバレッジ100\%です。
-    \item テストを何故書くのかを理解されていない。
+    \item 開発が予測可能になる。何が完成していて、何が完成していないかがわかる。
+    \item コードが伝えようとしていることを余すところなく受け取れる。
+      最初に思いついたコードを書き殴っただけで終わりなら、
+      最高してより良いコードを書くチャンスは永遠に来ない。
+
+    \large \color{blue}
+    \item あなたが作るソフトウェアのユーザを快適にする。
+    \item チームメイトはあなたを信頼し、あなたもまたチームメイトを信頼する。
+    \item 書いていて気持ちがいい。
   \end{itemize}
 \end{frame}
 
-\begin{frame}\frametitle{まずは実装してみて後からテストを書こう。}
-  テスト駆動開発(TDD)では最初にテストを書く(何故かは後述)。
+\subsection{テスト駆動開発の進め方}
+\begin{frame}\frametitle{テスト駆動開発の進め方}
+  \begin{enumerate}
+    \item まずはテストを1つ書く
+    \item すべてのテストを走らせ、新しいテストの失敗を確認する
+    \item 小さな変更を行う
+    \item すべてのテストを走らせ、すべて成功することを確認する
+    \item リファクタリングを行って重複を排除する
+  \end{enumerate}
 
-  しかし現実問題として「時間がないのでまずは実装をしたい、テストは後回しだ!」といったことは多々起こってる。
-  \begin{figure}
-    \includegraphics[height=5cm]{asset/bad_programmer.png}
-  \end{figure}
-  この発想自体がTDDに対して間違った認識をしてしまっていることの表れである。
+  \begin{center}
+    \includegraphics[height=4cm]{asset/tdd_cycle.png}
+  \end{center}
 \end{frame}
 
-\begin{frame}\frametitle{テスト後回しにすることによって起きる悲劇}
-  テストを後回しにすることの最大の悲劇は、全ての実装を終えた後にテストを書こうとしてテストを書けないことに気がつくことである。
-  \begin{figure}
-    \includegraphics[height=4cm]{asset/gabage_code.png}
-  \end{figure}
-  そしてテストを書くために今までのコードを全て書き直すことになる。
-\end{frame}
+\begin{frame}[fragile]\frametitle{まずはテストを1つ書く}
+  これから何を開発しないといけないのか、をはじめに考える。
 
-\begin{frame}\frametitle{テストを書くことで品質を担保する。}
-  これもTDDに対する認識の間違い。
-  TDDの結果として品質の良いプログラムが出来上がることがあったとしても、
-  TDDは品質を担保することを目的としていない。
-\end{frame}
+  \begin{quote}
+    \color{blue}
+    2つの整数の和を知りたい。
+  \end{quote}
+  $\rightarrow$ 2つの引数を取って、和を返す関数を作れば良いんだな。
 
-\begin{frame}[fragile]\frametitle{テストは成果物、カバレッジ100\%です。}
-  これはそもそもテストを理解していないパターンが多い。
-  カバレッジはテストを書く時の目安になることはあっても、カバレッジによってテストの正しさが証明されることはない。
-\end{frame}
-
-\begin{frame}[fragile]\frametitle{テストを何故書くのかを理解されていない。}
-  このテストはこの機能が正しいことをテストしていないよね(よくあるパターン)
-  \begin{minted}[fontsize=\scriptsize]{php}
-    <?php
-    /**
-     * テスト対象
-     */
-    class Foo {
-      function is_enable(): bool {
-        // 多くの依存関係
-        return $is_inable;
-      }
+  \scriptsize
+  \begin{minted}{go}
+    /*-- lib.go --*/
+    func Add(a, b int) int {
+        return 0
     }
 
-    /**
-     * Fooをテストするためのモック
-     */
-    class MockFoo extends Foo {
-      function is_enable(): bool {
-        return $this->enable;
-      }
+    /*-- lib_test.go --*/
+    func TestAdd(t *testing.T) {
+        result := Add(3, 4)
+        if result != 7 {
+            t.Fatalf("want=%d, got=%d", 7, result)
+        }
     }
   \end{minted}
 \end{frame}
 
-\subsection{テスト駆動開発とは何か}
-\begin{frame}\frametitle{テスト駆動開発とは何か}
-  {\small \color[gray]{0.5} テスト駆動開発「まえがき」}
-  \begin{quotation}
-    「動作するきれいなコード」。Ron Jeffries のこの簡潔な言葉が、テスト駆動開発(TDD)のゴールだ。
-    動作するきれいなコードはあらゆる意味で価値がある。
-  \end{quotation}
-
-  {\small \color[gray]{0.5} テスト駆動開発「本文」}
-  \begin{quotation}
-    TDDはテスト技法ではない...TDDは分析技法であり、設計技法であり、実際には開発の全てのアクティビティを構造化する技法なのだ。
-  \end{quotation}
-
-  \vspace{1\baselineskip}
-  完全に理解した。
+\begin{frame}[fragile]\frametitle{全てのテストを走らせ、新しいテストの失敗を確認する}
+  \scriptsize
+  \begin{minted}{text}
+    example % go test -cover .
+    --- FAIL: TestAdd (0.00s)
+        lib_test.go:10: want=7, got=0
+    FAIL
+    coverage: 100.0% of statements
+    FAIL	github.com/a-skua/tdd-handson/example	0.199s
+    FAIL
+  \end{minted}
 \end{frame}
 
-\subsection{ハンズオンをやる目的}
-\begin{frame}\frametitle{ハンズオンをやる目的}
-  チームメンバーの誰もがユニットテストを書いたことがなかった時、
-  新しいサービスを作るときに新しいプロダクトをTDDで進めようと踏み切れるだろうか?
-
-  \vspace{1\baselineskip}
-  TDDは開発における設計技法であるということを理解しないと
-  永遠に実装終えた後のテストで苦しむことになる。
-  ハンズオンを通してTDDを実践することで、TDDを採用する際の迷いを取り除くことが目的。
+\begin{frame}[fragile]\frametitle{小さな変更を行う}
+  \scriptsize
+  \begin{minted}{go}
+    /*-- lib.go --*/
+    func Add(a, b int) int {
+        return a + b
+    }
+  \end{minted}
 \end{frame}
 
-\section{テスト駆動開発の進め方}
-\begin{frame}\frametitle{テスト駆動開発の進め方}
-  {\small \color[gray]{0.5} テスト駆動開発「第1部」}
-  \begin{enumerate}
-    \item まずはテストを1つ書く
-    \item 全てのテストを走らせ、新しいテストの失敗を確認する
-    \item 小さな変更を行う
-    \item 全てのテストを走らせ、全て成功することを確認する
-    \item リファクタリングを行なって重複を排除する
-  \end{enumerate}
-
-  \vspace{1\baselineskip}
-  ここに書かれていることはベストプラクティスと捉えてもらえると良い。
-  テスト駆動開発はこのサイクルを回して開発を進めることになる。
+\begin{frame}[fragile]\frametitle{全てのテストを走らせ、全て成功することを確認する}
+  \scriptsize
+  \begin{minted}{text}
+    example % go test -cover .
+    ok  	github.com/a-skua/tdd-handson/example	0.226s	coverage: 100.0% of statements
+  \end{minted}
 \end{frame}
 
-\subsection{まずはテストを1つ書く}
-\begin{frame}\frametitle{まずはテストを1つ書く}
+\begin{frame}[fragile]\frametitle{リファクタリングを行なって重複を排除する}
+  これで1サイクルが終了する。
+  \scriptsize
+  \begin{minted}{go}
+    /*-- lib.go --*/
+    func Add(a, b int) int {
+        return a + b
+    }
+
+    /*-- lib_test.go --*/
+    func TestAdd(t *testing.T) {
+        result := Add(3, 4)
+        if result != 7 {
+            t.Fatalf("want=%d, got=%d", 7, result)
+        }
+    }
+  \end{minted}
 \end{frame}
 
-\subsection{全てのテストを走らせ、新しいテストの失敗を確認する}
-\begin{frame}\frametitle{全てのテストを走らせ、新しいテストの失敗を確認する}
+\begin{frame}[fragile]\frametitle{まずはテストを1つ書く}
+  2サイクル目に入る
+
+  \begin{quote}
+    \color{blue}
+    3つの整数の和を知りたい。
+  \end{quote}
+  $\rightarrow$ 3つの引数を取って、和を返す関数を作れば良いんだな。
+
+  \scriptsize
+  \begin{minted}{go}
+    /*-- lib.go --*/
+    func Add3(a, b, c int) int {
+        return 0
+    }
+
+    /*-- lib_test.go --*/
+    func TestAdd3(t *testing.T) {
+        result := Add(3, 4, 5)
+        if result != 12 {
+            t.Fatalf("want=%d, got=%d", 12, result)
+        }
+    }
+  \end{minted}
 \end{frame}
 
-\subsection{小さな変更を行う}
-\begin{frame}\frametitle{小さな変更を行う}
+\begin{frame}[fragile]\frametitle{全てのテストを走らせ、新しいテストの失敗を確認する}
+  \scriptsize
+  \begin{minted}{text}
+    example % go test -cover .
+    --- FAIL: TestAdd3 (0.00s)
+        lib_test.go:17: want=12, got=0
+    FAIL
+    coverage: 100.0% of statements
+    FAIL	github.com/a-skua/tdd-handson/example	0.233s
+    FAIL
+  \end{minted}
 \end{frame}
 
-\subsection{全てのテストを走らせ、全て成功することを確認する}
-\begin{frame}\frametitle{全てのテストを走らせ、全て成功することを確認する}
+\begin{frame}[fragile]\frametitle{小さな変更を行う}
+  \scriptsize
+  \begin{minted}{go}
+    /*-- lib.go --*/
+    func Add3(a, b, c int) int {
+        return a + b + c
+    }
+  \end{minted}
 \end{frame}
 
-\subsection{リファクタリングを行なって重複を排除する}
-\begin{frame}\frametitle{リファクタリングを行なって重複を排除する}
+\begin{frame}[fragile]\frametitle{全てのテストを走らせ、全て成功することを確認する}
+  \scriptsize
+  \begin{minted}{text}
+    example % go test -cover .
+    ok  	github.com/a-skua/tdd-handson/example	0.226s	coverage: 100.0% of statements
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{リファクタリングを行なって重複を排除する}
+  2サイクル目の終了
+  \scriptsize
+  \begin{minted}{go}
+    /*-- lib.go --*/
+    package example
+
+    func Add(a, b int) int {
+        return sum(a, b)
+    }
+
+    func Add3(a, b, c int) int {
+        return sum(a, b, c)
+    }
+
+    func sum(ns ...int) (result int) {
+        for _, n := range ns {
+            result += n
+        }
+        return
+    }
+  \end{minted}
+  ---
+  \begin{minted}{text}
+    example % go test -cover .
+    ok  	github.com/a-skua/tdd-handson/example	0.213s	coverage: 100.0% of statements
+  \end{minted}
 \end{frame}
 
 \section{ハンズオン}
