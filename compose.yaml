@@ -1,0 +1,19 @@
+services:
+  doc:
+    build: ./doc
+    volumes:
+      - type: bind
+        source: ./doc
+        target: /root/doc
+      - type: volume
+        source: cache-texlive
+        target: /root/.texlive2020/
+      - type: volume
+        source: cache-luatex
+        target: /var/lib/texmf/luatex-cache
+    command: make
+    working_dir: /root/doc
+volumes:
+  cache-texlive: {}
+  cache-luatex: {}
+
