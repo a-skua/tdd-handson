@@ -3,3 +3,4 @@
 !asset
 !asset/*
 !Makefile
+!Dockerfile
