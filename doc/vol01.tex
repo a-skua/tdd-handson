@@ -1,5 +1,5 @@
 \documentclass[aspectratio=169]{beamer}
-\usepackage[deluxe]{luatexja-preset}
+\usepackage[no-math,deluxe]{luatexja-preset}
 \renewcommand{\kanjifamilydefault}{\gtdefault}
 \usepackage{minted}
 \usepackage{xcolor}
@@ -8,7 +8,7 @@
 \setbeamertemplate{navigation symbols}{}
 
 \title{テスト駆動開発 ハンズオン \#1}
-\subtitle{Test-Driven Development Hans-On \#1}
+\subtitle{Test-Driven Development Hands-On \#1}
 \author{ASUKA Y}
 \date{Aug 21 2022}
 
@@ -120,12 +120,12 @@
     }
   \end{minted}
 
-  $\rightarrow$
-  \url{https://github.com/a-skua/tdd-handson/commit/89356e89595b1b403f563fc749eaeb59b15ec5b1}
+  {\color{gray}(\url{https://github.com/a-skua/tdd-handson/commit/89356e89595b1b403f563fc749eaeb59b15ec5b1})}
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{2. 全てのテストを走らせ、新しいテストの失敗を確認する}
   {
+    \color{gray}
     \scriptsize
     \begin{minted}{text}
       example % go test -cover .
@@ -140,27 +140,55 @@
 
   テストの失敗を確認することには意味がある。
   \begin{itemize}
-    \item {\color{blue} そのテストが有効であることの確認。}
-
-      {
-        \small
-        例えば、\textit{\color{red} func TextAdd(t *testing.T)}
-        と Typo していた場合に、成功パターンを書いていると気がつけない場合がある
-        (coverageで気がつくことは可能)。
-      }
+    \item {\color{blue} テストが有効であることの確認。}
     \item {\color{blue} 課題(TODO)であることの明記。}
+  \end{itemize}
+\end{frame}
 
-      {
-        \small
-        失敗するテストは道標となる。
-        \begin{quote}
-          翌日やることとして失敗するテストを書いておくと、
-          今日は何をするのか思い出す手間が省ける。
-
-          作業中に差し込みで別の作業が入った場合でも
-          再開する時のコンテキストスイッチを素早く行える。
-        \end{quote}
+\begin{frame}[fragile]\frametitle{テストが有効であることの確認}
+  成功パターンを書いていると気がつけない場合がある。
+  {
+    \scriptsize
+    \begin{minted}{go}
+      /*-- lib.go --*/
+      func Add(a, b int) int {
+          // 簡単な内容なので、失敗を確認せずに書き上げた
+          return a + b
       }
+
+      /*-- lib_test.go --*/
+      func TextAdd(t *testing.T) {
+          result := Add(3, 4)
+          want := 7
+          if result != want {
+              t.Errorf("result=%d, want=%d", result, want)
+          }
+      }
+    \end{minted}
+  }
+  {
+    \scriptsize
+    \color{gray}
+    \begin{minted}{text}
+      example % go test -cover ./...
+      ok  	github.com/a-skua/tdd-handson/example	0.298s	coverage: 83.3% of statements
+    \end{minted}
+  }
+  上記のように{\color{blue} Test}を{\color{red} Text}とTypoしてしまっていても、
+  これは失敗しない。
+  そして、初めから失敗を想定していないので、当然テストはパスする。
+\end{frame}
+
+\begin{frame}\frametitle{課題(TODO)であることの明記}
+  失敗するテストは道標となる。
+  \begin{itemize}
+    \item
+      翌日やることとして失敗するテストを書いておくと、
+      今日は何をするのか思い出す手間が省ける。
+
+    \item
+      作業中に差し込みで別の作業が入った場合でも
+      再開する時のコンテキストスイッチを素早く行える。
   \end{itemize}
 \end{frame}
 
@@ -174,18 +202,18 @@
       }
     \end{minted}
 
-    $\rightarrow$
-    \url{https://github.com/a-skua/tdd-handson/commit/1b5250883b7d0e0b69381fb743312e680bb718c4}
+    {\color{gray} (\url{https://github.com/a-skua/tdd-handson/commit/1b5250883b7d0e0b69381fb743312e680bb718c4})}
   }
 
   小さな変更にとどめることは非常に重要。
-  人は自分が思っているほど万能ではない。
+
   一度の変更が小さければ小さいほど、
   どこで間違えたのか判断しやすくなる。
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{4. 全てのテストを走らせ、全て成功することを確認する}
   \scriptsize
+  \color{gray}
   \begin{minted}{text}
     example % go test -cover .
     ok  	github.com/a-skua/tdd-handson/example	0.226s	coverage: 100.0% of statements
@@ -193,7 +221,6 @@
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{5. リファクタリングを行なって重複を排除する}
-  {\small (今回はリファクタリングを行っていない)}
   {
     \scriptsize
     \begin{minted}{go}
@@ -205,8 +232,9 @@
       /*-- lib_test.go --*/
       func TestAdd(t *testing.T) {
           result := Add(3, 4)
-          if result != 7 {
-              t.Fatalf("want=%d, got=%d", 7, result)
+          want := 7
+          if result != want {
+              t.Fatalf("want=%d, got=%d", want, result)
           }
       }
     \end{minted}
@@ -241,8 +269,7 @@
       }
     \end{minted}
 
-    $\rightarrow$
-    \url{https://github.com/a-skua/tdd-handson/commit/822b7d65a81c842db6ed62d9dc600b29c30e760c}
+    {\color{gray} (\url{https://github.com/a-skua/tdd-handson/commit/822b7d65a81c842db6ed62d9dc600b29c30e760c})}
   }
 
   コードを書き始める前から最適化について考えない方が良い。
@@ -251,6 +278,7 @@
 \begin{frame}[fragile]\frametitle{Re: 2. 全てのテストを走らせ、新しいテストの失敗を確認する}
   {
     \scriptsize
+    \color{gray}
     \begin{minted}{text}
       example % go test -cover .
       --- FAIL: TestAdd3 (0.00s)
@@ -274,12 +302,12 @@
     }
   \end{minted}
 
-  $\rightarrow$
-  \url{https://github.com/a-skua/tdd-handson/commit/1ad0b944d4b88829b820cec4b29b67bc553d99ff}
+  {\color{gray} (\url{https://github.com/a-skua/tdd-handson/commit/1ad0b944d4b88829b820cec4b29b67bc553d99ff})}
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{Re: 4. 全てのテストを走らせ、全て成功することを確認する}
   \scriptsize
+  \color{gray}
   \begin{minted}{text}
     example % go test -cover .
     ok  	github.com/a-skua/tdd-handson/example	0.226s	coverage: 100.0% of statements
@@ -309,8 +337,8 @@
       }
     \end{minted}
 
-    $\rightarrow$
-    \url{https://github.com/a-skua/tdd-handson/commit/e0794b19678b66cc6aa959ad73f4be367c4a2ae2}
+    {\color{gray} (\url{https://github.com/a-skua/tdd-handson/commit/e0794b19678b66cc6aa959ad73f4be367c4a2ae2})}
+    \color{gray}
     \begin{minted}{text}
       example % go test -cover .
       ok  	github.com/a-skua/tdd-handson/example	0.213s	coverage: 100.0% of statements
@@ -674,12 +702,44 @@
 \end{frame}
 
 \section{ハンズオン}
-\subsection{フィボナッチ数列}
-\begin{frame}\frametitle{ハンズオン: フィボナッチ数列}
+\begin{frame}
+  \begin{center}
+    ハンズオン
+  \end{center}
 \end{frame}
 
-\subsection{逆ポーランド電卓}
-\begin{frame}\frametitle{ハンズオン: 逆ポーランド電卓}
+\subsection{フィボナッチ数列}
+\begin{frame}\frametitle{ハンズオン: フィボナッチ数列}
+  {\color{gray} \url{https://github.com/a-skua/tdd-handson/tree/main/fibonacci}}
+
+  \begin{align*}
+    F_0 &= 0, \\
+    F_1 &= 1, \\
+    F_{n+2} &= F_n + F_{n+1} (n \ge 0)
+  \end{align*}
+
+  \begin{enumerate}
+    \item まずはテストを1つ書く
+    \item すべてのテストを走らせ、新しいテストの失敗を確認する
+    \item 小さな変更を行う
+    \item すべてのテストを走らせ、すべて成功することを確認する
+    \item リファクタリングを行って重複を排除する
+  \end{enumerate}
+\end{frame}
+
+\subsection{逆ポーランド記法電卓}
+\begin{frame}\frametitle{ハンズオン: 逆ポーランド記法電卓}
+  {\color{gray} \url{https://github.com/a-skua/tdd-handson/tree/main/calculator}}
+
+  中置記法
+  \[ (1 + 2) * (3 + 4) \]
+  ポーランド記法(前置記法)
+  \[ *\, +\,1\,2\, +\,3\,4 \]
+
+  逆ポーランド記法(後置記法)
+  \[ 1\,2\,+\, 3\,4\,+\, * \]
+
+  \includegraphics[height=3cm]{asset/stack.png}
 \end{frame}
 
 \subsection{RESTful API}
