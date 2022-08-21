@@ -1,0 +1,6 @@
+*
+!*.tex
+!asset
+!asset/*
+!Makefile
+!Dockerfile
