@@ -1,4 +1,7 @@
 services:
+  gopher:
+    image: golang:latest
+    working_dir: /go/src
   doc:
     build: ./doc
     volumes:
