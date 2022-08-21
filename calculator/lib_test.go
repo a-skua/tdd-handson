@@ -32,6 +32,67 @@ func TestCalc(t *testing.T) {
 			want:    3,
 			wantErr: false,
 		},
+		{
+			name:    "3 + 4",
+			exp:     "3 4 +",
+			want:    7,
+			wantErr: false,
+		},
+		{
+			name:    "3 * 4",
+			exp:     "3 4 *",
+			want:    12,
+			wantErr: false,
+		},
+		{
+			name:    "(1 + 2) * (3 + 4)",
+			exp:     "1 2 + 3 4 + *",
+			want:    21,
+			wantErr: false,
+		},
+		{
+			name:    "invalid statement: 1 2",
+			exp:     "1 2",
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "invalid statement: 2 +",
+			exp:     "2 +",
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "invalid statement: 2 *",
+			exp:     "2 *",
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "invalid statement: 2 /",
+			exp:     "2 /",
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "invalid opecode: 1 2 mod",
+			exp:     " 1 2 mod",
+			want:    0,
+			wantErr: true,
+		},
+		{
+			name:    "(1 + 2) * (3 + 4) / 10",
+			exp:     "1 2 + 3 4 + * 10 /",
+			want:    2,
+			wantErr: false,
+		},
+		// TODO 実装してみよう
+		{
+			name:    "10 - (1 + 2) * (3 + 4)",
+			exp:     "10 1 2 + 3 4 + * -",
+			want:    -11,
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
