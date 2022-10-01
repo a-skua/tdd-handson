@@ -6,15 +6,31 @@ import (
 	"strings"
 )
 
+// Stack
+type stack []int
+
+func (s stack) length() int {
+	return len(s)
+}
+
+func (s *stack) pop() int {
+	v := (*s)[len(*s)-1]
+	*s = (*s)[:len(*s)-1]
+	return v
+}
+
+func (s *stack) push(v int) {
+	*s = append(*s, v)
+}
+
 // 演算子の実行
-func execOpecode(stack *[]int, op func(int, int) int) error {
-	if len(*stack) < 2 {
+func execOpecode(stack *stack, op func(int, int) int) error {
+	if stack.length() < 2 {
 		return errors.New("stack-length less than 2")
 	}
 
-	a, b := (*stack)[len(*stack)-2], (*stack)[len(*stack)-1]
-	*stack = (*stack)[:len(*stack)-2]
-	*stack = append(*stack, op(a, b))
+	b, a := stack.pop(), stack.pop()
+	stack.push(op(a, b))
 
 	return nil
 }
@@ -23,37 +39,36 @@ func execOpecode(stack *[]int, op func(int, int) int) error {
 // in : "1 2 + 3 4 + *"
 // out: 21, nil
 func Calc(exp string) (int, error) {
-	stack := []int{}
+	stack := stack{}
 
 	for _, op := range strings.Split(exp, " ") {
-		switch op {
-		case "+":
-			err := execOpecode(&stack, func(a, b int) int { return a + b })
-			if err != nil {
-				return 0, err
+		err := func() error {
+			switch op {
+			case "+":
+				return execOpecode(&stack, func(a, b int) int { return a + b })
+			// case "-":
+			// 	return execOpecode(&stack, func(a, b int) int { return a - b })
+			case "/":
+				return execOpecode(&stack, func(a, b int) int { return a / b })
+			case "*":
+				return execOpecode(&stack, func(a, b int) int { return a * b })
+			default:
+				num, err := strconv.Atoi(op)
+				if err != nil {
+					return err
+				}
+				stack.push(num)
+				return nil
 			}
-		case "/":
-			err := execOpecode(&stack, func(a, b int) int { return a / b })
-			if err != nil {
-				return 0, err
-			}
-		case "*":
-			err := execOpecode(&stack, func(a, b int) int { return a * b })
-			if err != nil {
-				return 0, err
-			}
-		default:
-			num, err := strconv.Atoi(op)
-			if err != nil {
-				return 0, err
-			}
-			stack = append(stack, num)
+		}()
+		if err != nil {
+			return 0, err
 		}
 	}
 
-	if len(stack) != 1 {
+	if stack.length() != 1 {
 		return 0, errors.New("failed result")
 	}
 
-	return stack[0], nil
+	return stack.pop(), nil
 }
