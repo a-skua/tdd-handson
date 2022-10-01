@@ -18,9 +18,17 @@ func (y Y) Int() int {
 type State bool
 
 const (
-	State_Live State = true
-	State_Die  State = false
+	Live State = true
+	Die  State = false
 )
+
+func (s State) IsLive() bool {
+	return s == Live
+}
+
+func (s State) IsDie() bool {
+	return s == Die
+}
 
 type Cell struct {
 	x      X
@@ -51,7 +59,7 @@ func (c *Cell) outrangeY(y Y) bool {
 // current states
 func (c *Cell) current(x X, y Y) State {
 	if c.outrangeX(x) || c.outrangeY(y) {
-		return State_Die
+		return Die
 	}
 
 	return c.states[c.x.Int()*y.Int()+x.Int()]
@@ -80,11 +88,11 @@ func (c *Cell) future(x X, y Y) State {
 
 	state := c.current(x, y)
 	switch {
-	case state == State_Live && (countAroundLives == 2 || countAroundLives == 3),
-		state == State_Die && countAroundLives == 3:
-		return State_Live
+	case state.IsLive() && (countAroundLives == 2 || countAroundLives == 3),
+		state.IsDie() && countAroundLives == 3:
+		return Live
 	default:
-		return State_Die
+		return Die
 	}
 }
 
