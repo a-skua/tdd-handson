@@ -4,6 +4,39 @@ import (
 	"testing"
 )
 
+func TestStack(t *testing.T) {
+	stack := stack{}
+	if want := 0; want != stack.length() {
+		t.Fatalf("want=%v, got=%v.", want, stack.length())
+	}
+
+	stack.push(10)
+	if want := 1; want != stack.length() {
+		t.Fatalf("want=%v, got=%v.", want, stack.length())
+	}
+
+	stack.push(21)
+	if want := 2; want != stack.length() {
+		t.Fatalf("want=%v, got=%v.", want, stack.length())
+	}
+
+	got := stack.pop()
+	if want := 21; want != got {
+		t.Fatalf("want=%v, got=%v.", want, got)
+	}
+	if want := 1; want != stack.length() {
+		t.Fatalf("want=%v, got=%v.", want, stack.length())
+	}
+
+	got = stack.pop()
+	if want := 10; want != got {
+		t.Fatalf("want=%v, got=%v.", want, got)
+	}
+	if want := 0; want != stack.length() {
+		t.Fatalf("want=%v, got=%v.", want, stack.length())
+	}
+}
+
 func TestCalc(t *testing.T) {
 	type test struct {
 		name    string
@@ -86,8 +119,7 @@ func TestCalc(t *testing.T) {
 			want:    2,
 			wantErr: false,
 		},
-		// TODO 実装してみよう
-		{
+		{ // TODO 実装してみよう
 			name:    "10 - (1 + 2) * (3 + 4)",
 			exp:     "10 1 2 + 3 4 + * -",
 			want:    -11,
